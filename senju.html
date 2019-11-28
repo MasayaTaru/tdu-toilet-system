@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TDU -千住キャンパス-</title>
+    <!-- BootstrapのCSS読み込み -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" text="text/css">
+    <!-- jQuery読み込み -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://cdn.mlkcca.com/v0.6.0/milkcocoa.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <!-- BootstrapのJS読み込み -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="script.js"></script>
+  </head>
+
+  <body>
+    <script>
+      // Milkcocoaに接続
+      var milkcocoa = new MilkCocoa('catjybj8hav.mlkcca.com');
+      //現在時刻を取得
+      var date = new Date();
+      // データストアを取得
+      var ds = milkcocoa.dataStore('esp8266');
+      ds.stream().next(function(err, msgs){
+        // データストアの最新メッセージ
+        var last_msg = msgs[msgs.length - 1];
+
+        if(last_msg.value.s1 == 1){
+          var x = date - last_msg.timestamp;
+          var x = Math.round(x / 1000);
+          var s1 = "NG";
+          if(x > 120){
+            target = document.getElementById("s1");
+            target.classList.add("text-warning");
+          } else{
+            target = document.getElementById("s1");
+            target.classList.add("text-danger");
+          }
+        } else{
+          var s1 = "OK";
+          target = document.getElementById("s1");
+          target.classList.add("text-primary");
+        }
+
+        if(last_msg.value.s2 == 1){
+          var x = date - last_msg.timestamp;
+          var x = Math.round(x / 1000);
+          var s2 = "NG";
+          if(x > 120){
+            target = document.getElementById("s2");
+            target.classList.add("text-warning");
+          } else{
+            target = document.getElementById("s2");
+            target.classList.add("text-danger");
+          }
+        } else{
+          var s2 = "OK";
+          target = document.getElementById("s2");
+          target.classList.add("text-primary");
+        }
+
+        var sml = -(last_msg.value.sml * (100 / 1024) - 100);
+        sml = sml * 2;
+        target = document.getElementById("sml");
+        target.style.width = sml + "%";
+        if(sml > 40 && sml <= 60){
+          target.classList.add("bg-success");
+        } else if(sml > 60 && sml <= 80){
+          target.classList.add("bg-warning");
+        } else if(sml > 80 && sml <= 100){
+          target.classList.add("bg-danger");
+        } else{
+
+        }
+
+        $('#s1').text(s1);
+        $('#s2').text(s2);
+        $('#sml')
+      });
+
+    </script>
+
+    <header>
+      <div class="header-item">
+        <h1 class="text-center">TDU トイレ在室情報システム</h1>
+        <h5 class="text-center">東京千住キャンパス</h5>
+      </div>
+    </header>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3">
+
+          <div class="accordion" id="accordionExample">
+            <div class="card">
+              <div class="card-header" id="headingOne">
+                <h2 class="mb-0">
+                  <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    空きトイレ検索
+                  </button>
+                </h2>
+              </div>
+              <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                <div class="card-body">
+                  <p>現在地を選択してください</p>
+                  <form name="formName" method="post">
+                  <select class ="parent" name="building" required>
+                    <option value="" class="msg" disabled selected>号館</option>
+                    <option value = "1">1号館</option>
+                    <option value = "2">2号館</option>
+                    <option value = "3">3号館</option>
+                    <option value = "4">4号館</option>
+                    <option value = "5">5号館</option>
+                  </select>
+
+                  <select class="children" name="stage" disabled required>
+                    <option value="" class="msg" disabled selected>階</option>
+                    <option value="1階" data-val="1">1階</option>
+                    <option value="2階" data-val="1">2階</option>
+                    <option value="3階" data-val="1">3階</option>
+                    <option value="4階" data-val="1">4階</option>
+                    <option value="5階" data-val="1">5階</option>
+                    <option value="6階" data-val="1">6階</option>
+                    <option value="7階" data-val="1">7階</option>
+                    <option value="8階" data-val="1">8階</option>
+                    <option value="9階" data-val="1">9階</option>
+                    <option value="10階" data-val="1">10階</option>
+                    <option value="11階" data-val="1">11階</option>
+                    <option value="12階" data-val="1">12階</option>
+                    <option value="13階" data-val="1">13階</option>
+                    <option value="14階" data-val="1">14階</option>
+
+                    <option value="1階" data-val="2">1階</option>
+                    <option value="2階" data-val="2">2階</option>
+                    <option value="3階" data-val="2">3階</option>
+                    <option value="4階" data-val="2">4階</option>
+                    <option value="5階" data-val="2">5階</option>
+                    <option value="6階" data-val="2">6階</option>
+                    <option value="7階" data-val="2">7階</option>
+                    <option value="8階" data-val="2">8階</option>
+                    <option value="9階" data-val="2">9階</option>
+                    <option value="10階" data-val="2">10階</option>
+
+                    <option value="1階" data-val="3">1階</option>
+                    <option value="2階" data-val="3">2階</option>
+                    <option value="3階" data-val="3">3階</option>
+
+                    <option value="1階" data-val="4">1階</option>
+                    <option value="2階" data-val="4">2階</option>
+                    <option value="3階" data-val="4">3階</option>
+                    <option value="4階" data-val="4">4階</option>
+                    <option value="5階" data-val="4">5階</option>
+                    <option value="6階" data-val="4">6階</option>
+                    <option value="7階" data-val="4">7階</option>
+                    <option value="8階" data-val="4">8階</option>
+                    <option value="9階" data-val="4">9階</option>
+                    <option value="10階" data-val="4">10階</option>
+
+                    <option value="1階" data-val="5">1階</option>
+                    <option value="2階" data-val="5">2階</option>
+                    <option value="3階" data-val="5">3階</option>
+                    <option value="4階" data-val="5">4階</option>
+                    <option value="5階" data-val="5">5階</option>
+                    <option value="6階" data-val="5">6階</option>
+                    <option value="7階" data-val="5">7階</option>
+                    <option value="8階" data-val="5">8階</option>
+                    <option value="9階" data-val="5">9階</option>
+                    <option value="10階" data-val="5">10階</option>
+                  </select>
+                  <input type="button" value="検索" onclick="OnButtonClick();">
+                  <div id="output"></div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header" id="headingTwo">
+                <h2 class="mb-0">
+                  <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    使い方
+                  </button>
+                </h2>
+              </div>
+              <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                <div class="card-body">
+                  <h5>在室情報</h5>
+                  <p>空室：OK　満室：NG<br>※黄色のNGは入室から2分経過</p>
+                  <h5>においレベル</h5>
+                  <p>0～40%：青<br>41～60%：緑<br>61～80%：黄<br>81～100%：赤（危険）</p>
+                  <h5>トイレ利用状況</h5>
+                  <p>トイレが使用された回数を表示</p>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header" id="headingThree">
+                <h2 class="mb-0">
+                  <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    対応状況
+                  </button>
+                </h2>
+              </div>
+              <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                <div class="card-body">
+                  <h5>東京電機大学</h5>
+                  <p>　東京千住キャンパス<br>　　1号館14階</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-9">
+          <button class="btn btn-primary">1号館</button>
+          <button type="button" class="btn btn-primary" data-toggle="tooltip" title="まだ対応していません">2号館</button>
+          <button type="button" class="btn btn-primary" data-toggle="tooltip" title="まだ対応していません">3号館</button>
+          <button type="button" class="btn btn-primary" data-toggle="tooltip" title="まだ対応していません">4号館</button>
+          <button type="button" class="btn btn-primary" data-toggle="tooltip" title="まだ対応していません">5号館</button>
+
+          <div class="container">
+            <div class="table-responsive">
+              <table class="table table-striped table-dark table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th>階</th>
+                    <th>在室情報</th>
+                    <th>MAP</th>
+                    <th>においレベル</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">14</th>
+                    <td><span id="s1"></span>　<span id="s2"></span></td>
+                    <td>
+                      <div class="pop-box">
+                        <label for="popup-on"><div class="btn-open">view</div></label>
+                        <input type="checkbox" id="popup-on">
+                        <div class="popup">
+                          <label for="popup-on" class="icon-close">×</label>
+                          <div class="popup-content">
+                            <img src="img/tdu_01.jpg" alt="">
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" style="width: ;" id="sml"></div></div></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">13</th>
+                    <td><span class="text-danger">NG</span>　<span class="text-danger">NG</span></td>
+                    <td>
+                      <div class="pop-box">
+                        <label for="popup-on"><div class="btn-open">view</div></label>
+                        <input type="checkbox" id="popup-on">
+                        <div class="popup">
+                          <label for="popup-on" class="icon-close">×</label>
+                          <div class="popup-content">
+                            <img src="img/tdu_01.jpg" alt="">
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%;"></div></div></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">12</th>
+                    <td><span class="text-danger">NG</span>　<span class="text-danger">NG</span></td>
+                    <td>
+                      <div class="pop-box">
+                        <label for="popup-on"><div class="btn-open">view</div></label>
+                        <input type="checkbox" id="popup-on">
+                        <div class="popup">
+                          <label for="popup-on" class="icon-close">×</label>
+                          <div class="popup-content">
+                            <img src="img/tdu_01.jpg" alt="">
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%;"></div></div></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">11</th>
+                    <td><span class="text-danger">NG</span>　<span class="text-danger">NG</span></td>
+                    <td>
+                      <div class="pop-box">
+                        <label for="popup-on"><div class="btn-open">view</div></label>
+                        <input type="checkbox" id="popup-on">
+                        <div class="popup">
+                          <label for="popup-on" class="icon-close">×</label>
+                          <div class="popup-content">
+                            <img src="img/tdu_01.jpg" alt="">
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%;"></div></div></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">10</th>
+                    <td><span class="text-danger">NG</span>　<span class="text-danger">NG</span></td>
+                    <td>
+                      <div class="pop-box">
+                        <label for="popup-on"><div class="btn-open">view</div></label>
+                        <input type="checkbox" id="popup-on">
+                        <div class="popup">
+                          <label for="popup-on" class="icon-close">×</label>
+                          <div class="popup-content">
+                            <img src="img/tdu_01.jpg" alt="">
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" style="width: 100%;"></div></div></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">9</th>
+                    <td><span class="text-danger">NG</span>　<span class="text-danger">NG</span></td>
+                    <td>
+                      <div class="pop-box">
+                        <label for="popup-on"><div class="btn-open">view</div></label>
+                        <input type="checkbox" id="popup-on">
+                        <div class="popup">
+                          <label for="popup-on" class="icon-close">×</label>
+                          <div class="popup-content">
+                            <img src="img/tdu_01.jpg" alt="">
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" style="width: 90%;"></div></div></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">8</th>
+                    <td><span class="text-danger">NG</span>　<span class="text-danger">NG</span></td>
+                    <td>
+                      <div class="pop-box">
+                        <label for="popup-on"><div class="btn-open">view</div></label>
+                        <input type="checkbox" id="popup-on">
+                        <div class="popup">
+                          <label for="popup-on" class="icon-close">×</label>
+                          <div class="popup-content">
+                            <img src="img/tdu_01.jpg" alt="">
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 80%;"></div></div></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">7</th>
+                    <td><span class="text-danger">NG</span>　<span class="text-danger">NG</span></td>
+                    <td>
+                      <div class="pop-box">
+                        <label for="popup-on"><div class="btn-open">view</div></label>
+                        <input type="checkbox" id="popup-on">
+                        <div class="popup">
+                          <label for="popup-on" class="icon-close">×</label>
+                          <div class="popup-content">
+                            <img src="img/tdu_01.jpg" alt="">
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 70%;"></div></div></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">6</th>
+                    <td><span class="text-danger">NG</span>　<span class="text-danger">NG</span></td>
+                    <td>
+                      <div class="pop-box">
+                        <label for="popup-on"><div class="btn-open">view</div></label>
+                        <input type="checkbox" id="popup-on">
+                        <div class="popup">
+                          <label for="popup-on" class="icon-close">×</label>
+                          <div class="popup-content">
+                            <img src="img/tdu_01.jpg" alt="">
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 60%;"></div></div></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">5</th>
+                    <td><span class="text-danger">NG</span>　<span class="text-danger">NG</span></td>
+                    <td>
+                      <div class="pop-box">
+                        <label for="popup-on"><div class="btn-open">view</div></label>
+                        <input type="checkbox" id="popup-on">
+                        <div class="popup">
+                          <label for="popup-on" class="icon-close">×</label>
+                          <div class="popup-content">
+                            <img src="img/tdu_01.jpg" alt="">
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 50%;"></div></div></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">4</th>
+                    <td><span class="text-danger">NG</span>　<span class="text-danger">NG</span></td>
+                    <td>
+                      <div class="pop-box">
+                        <label for="popup-on"><div class="btn-open">view</div></label>
+                        <input type="checkbox" id="popup-on">
+                        <div class="popup">
+                          <label for="popup-on" class="icon-close">×</label>
+                          <div class="popup-content">
+                            <img src="img/tdu_01.jpg" alt="">
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 40%;"></div></div></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">3</th>
+                    <td><span class="text-danger">NG</span>　<span class="text-danger">NG</span></td>
+                    <td>
+                      <div class="pop-box">
+                        <label for="popup-on"><div class="btn-open">view</div></label>
+                        <input type="checkbox" id="popup-on">
+                        <div class="popup">
+                          <label for="popup-on" class="icon-close">×</label>
+                          <div class="popup-content">
+                            <img src="img/tdu_01.jpg" alt="">
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 30%;"></div></div></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">2</th>
+                    <td><span class="text-danger">NG</span>　<span class="text-danger">NG</span>　<span class="text-danger">NG</span>　<span class="text-danger">NG</span></td>
+                    <td>
+                      <div class="pop-box">
+                        <label for="popup-on"><div class="btn-open">view</div></label>
+                        <input type="checkbox" id="popup-on">
+                        <div class="popup">
+                          <label for="popup-on" class="icon-close">×</label>
+                          <div class="popup-content">
+                            <img src="img/tdu_01.jpg" alt="">
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 20%;"></div></div></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">1</th>
+                    <td><span class="text-danger">NG</span>　<span class="text-danger">NG</span>　<span class="text-danger">NG</span>　<span class="text-danger">NG</span></td>
+                    <td>
+                      <div class="pop-box">
+                        <label for="popup-on"><div class="btn-open">view</div></label>
+                        <input type="checkbox" id="popup-on">
+                        <div class="popup">
+                          <label for="popup-on" class="icon-close">×</label>
+                          <div class="popup-content">
+                            <img src="img/tdu_01.jpg" alt="">
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 10%;"></div></div></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container-showdata">
+        <h3>トイレ利用状況</h3>
+        <div id="graf"></div>
+        <script src="graf.js"></script>
+      </div>
+    </div>
+
+    <footer class="text-center" class="fixed-bottom">
+      <address>Copyright(c) 2019 project_team_E. All Rights Reserved.  </address>
+    </footer>
+
+  </body>
+</html>
